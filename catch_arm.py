@@ -15,8 +15,8 @@ OCPUS = 1                        # 1 OCPU = capacity મળવાની શક�
 MEMORY_GB = 6                    # 6 GB RAM
 
 # આ OCID તમારા Oracle Account મુજબ બદલવો પડશે (નીચે સમજાવ્યું છે)
-IMAGE_ID = "ocid1.image.oc1.ap-mumbai-1.aaaaaaa..."   # Ubuntu ARM Image
-SUBNET_ID = "ocid1.subnet.oc1.ap-mumbai-1.aaaaaaa..." # Public Subnet
+IMAGE_ID = "ocid1.image.oc1.ap-mumbai-1.aaaaaaaam27cs4bad63uypvkxz477ks5ywhyuacgxnkgcrstedgeawym3vyq"
+SUBNET_ID = "ocid1.subnet.oc1.ap-mumbai-1.aaaaaaaa6fdhutxidtdfhgrchbhrm3zmqobn5rp5rp3auwjneskquhsj3qxq"
 
 def try_create():
     try:
