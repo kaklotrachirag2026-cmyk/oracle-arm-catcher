@@ -1,5 +1,5 @@
 """
-Oracle ARM Instance Catcher for GitHub Actions
+Oracle ARM Instance Catcher - FINAL VERSION
 """
 
 import oci
@@ -14,22 +14,19 @@ from datetime import datetime
 
 COMPARTMENT_ID = os.environ.get("OCI_COMPARTMENT_OCID")
 
-AVAILABILITY_DOMAIN = "AD-1"       # AD-1, AD-2, AD-3
+AVAILABILITY_DOMAIN = "AD-1"
 SHAPE = "VM.Standard.A1.Flex"
-OCPUS = 1                           # 1 OCPU
-MEMORY_GB = 6                       # 6 GB RAM
+OCPUS = 1
+MEMORY_GB = 6
 
-# Image OCID — Ubuntu 22.04 aarch64
 IMAGE_ID = "ocid1.image.oc1.ap-mumbai-1.aaaaaaaam27cs4bad63uypvkxz477ks5ywhyuacgxnkgcrstedgeawym3vyq"
 
-# Subnet OCID — Public Subnet
 SUBNET_ID = "ocid1.subnet.oc1.ap-mumbai-1.aaaaaaaa6fdhutxidtdfhgrchbhrm3zmqobn5rp5rp3auwjneskquhsj3qxq"
 
 # ============================================
 
 
 def try_create():
-    """Ek var instance create karva no prayas"""
     try:
         config = oci.config.from_file()
         compute = oci.core.ComputeClient(config)
@@ -50,21 +47,25 @@ def try_create():
         response = compute.launch_instance(launch_details)
         print("SUCCESS! Instance created:")
         print("   OCID:", response.data.id)
-        print("   Name:", response.data.display_name)
         return True
 
     except oci.exceptions.ServiceError as e:
-        if "Out of host capacity" in str(e.message):
+        print("ServiceError Code:", e.code)
+        print("ServiceError Message:", e.message)
+        print("ServiceError Status:", e.status)
+        if "Out of host capacity" in str(e.message) or "OutOfCapacity" in str(e.code):
             print(datetime.now(), "— Out of capacity. Retrying...")
             return False
         elif "LimitExceeded" in str(e.code):
             print(datetime.now(), "— Limit exceeded. Stopping.")
             sys.exit(0)
         else:
-            print("Error:", e.code, "—", e.message)
+            print("UNHANDLED ServiceError")
             sys.exit(1)
     except Exception as e:
         print("Unexpected error:", str(e))
+        import traceback
+        traceback.print_exc()
         sys.exit(1)
 
 
@@ -72,7 +73,9 @@ def main():
     print("Starting Oracle ARM Catcher at", datetime.now())
     print("   Shape:", SHAPE, "|", OCPUS, "OCPU |", MEMORY_GB, "GB RAM")
     print("   AD:", AVAILABILITY_DOMAIN)
-    print("   Compartment:", COMPARTMENT_ID[:50] if COMPARTMENT_ID else "NONE")
+    print("   Compartment:", COMPARTMENT_ID)
+    print("   Image:", IMAGE_ID[:60])
+    print("   Subnet:", SUBNET_ID[:60])
     print()
 
     for i in range(10):
